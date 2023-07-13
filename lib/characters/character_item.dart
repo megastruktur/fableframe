@@ -6,6 +6,7 @@ class CharacterItem extends StatelessWidget {
   final Character character;
   const CharacterItem({super.key, required this.character});
 
+
   @override
   Widget build(BuildContext context) {
 
@@ -70,6 +71,11 @@ class CharacterScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        tooltip: 'Edit',
+        child: const Icon(Icons.edit),
+      ),
       body: ListView(
         children: [
           Hero(
@@ -96,13 +102,24 @@ class CharacterScreen extends StatelessWidget {
                     ),
               ),
             )
-              ),
-          Text(
-            character.name,
-            style: const TextStyle(
-                height: 2, fontSize: 20, fontWeight: FontWeight.bold),
           ),
-      ]),
+          // Center the text in the middle
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Text(
+              character.name,
+              style: const TextStyle(
+                fontSize: 20,
+                height: 5.0,
+              ),
+              overflow: TextOverflow.fade,
+              softWrap: false,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          ...character.getFieldsWidgets()
+        ]
+      ),
     );
   }
 }

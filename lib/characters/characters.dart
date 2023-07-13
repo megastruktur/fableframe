@@ -38,6 +38,12 @@ class CharactersScreen extends StatelessWidget {
               crossAxisCount: 2,
               children: characters.map((character) => CharacterItem(character: character)).toList(),
             ),
+            // Floating navigation button to create new character
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {},
+              child: const Icon(Icons.add),
+            ),
+
             bottomNavigationBar: const BottomNavBar(activePage: 2,),
           );
         }

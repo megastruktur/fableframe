@@ -63,10 +63,9 @@ class Field {
         
         var iconsWidgets = value.runes.map((c) {
           var sign = String.fromCharCode(c);
-          print(sign);
           if (sign == '+') {
             return const Icon(
-              FontAwesomeIcons.circle,
+              FontAwesomeIcons.solidCircle,
               color: Colors.red,
               size: 20,
             );
@@ -108,6 +107,9 @@ class Field {
               style: const TextStyle(
                 fontSize: 20,
               ),
+            ),
+            Text(
+              value,
             ),
           ],
         );

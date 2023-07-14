@@ -141,4 +141,10 @@ class PocketbaseProvider extends ChangeNotifier {
     return character;
   }
 
+  Future<void> getCharacterStream(String id) async {
+    await _pb.collection('characters').subscribe(id, (e) async {
+      logger.d(e);
+    });
+  }
+
 }

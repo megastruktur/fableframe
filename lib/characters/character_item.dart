@@ -1,5 +1,7 @@
+import 'package:fableframe/services/database.dart';
 import 'package:fableframe/services/models.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CharacterItem extends StatelessWidget {
 
@@ -67,6 +69,10 @@ class CharacterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // Example of Stream.
+    // Provider.of<PocketbaseProvider>(context, listen: true).getCharacterStream(character.id);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,

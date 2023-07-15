@@ -106,8 +106,8 @@ class PocketbaseProvider extends ChangeNotifier {
       ref.forEach((record) {
 
         var char = Character.fromRecord(record);
-        char.avatarUrl = _pb.files.getUrl(record, char.avatar);
         
+        char.avatarUrl = _pb.files.getUrl(record, char.avatar);
         characters.add(char);
       });
 
@@ -116,8 +116,9 @@ class PocketbaseProvider extends ChangeNotifier {
     } on ClientException catch (e) {
       // Pocketbase exception
       logger.e(e);
-    } catch (e) {
+    } catch (e, stacktrace) {
       logger.e(e);
+      logger.e(stacktrace);
     }
     return characters;
   }
@@ -145,6 +146,22 @@ class PocketbaseProvider extends ChangeNotifier {
     await _pb.collection('characters').subscribe(id, (e) async {
       logger.d(e);
     });
+  }
+
+  Future<CharacterSheet> getCharacterSheet(String id) async {
+    var characterSheet = CharacterSheet();
+    try {
+      var ref = await _pb.collection('character_sheets').getOne(id);
+      characterSheet = CharacterSheet.fromRecord(ref);
+    }
+    on ClientException catch (e) {
+      logger.e(e);
+    }
+    catch (e, stacktrace) {
+      logger.e(e);
+      logger.e(stacktrace);
+    }
+    return characterSheet;
   }
 
 }

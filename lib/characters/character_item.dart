@@ -1,7 +1,10 @@
 import 'package:fableframe/services/database.dart';
 import 'package:fableframe/services/models.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+
+var logger = Logger();
 
 class CharacterItem extends StatelessWidget {
 
@@ -73,59 +76,28 @@ class CharacterScreen extends StatelessWidget {
     // Example of Stream.
     // Provider.of<PocketbaseProvider>(context, listen: true).getCharacterStream(character.id);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Edit',
-        child: const Icon(Icons.edit),
-      ),
-      body: ListView(
-        children: [
-          Hero(
-            tag: character.id,
-            child: Container(
-              height: 140,
-              clipBehavior: Clip.antiAlias,
-              
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.black,
-                  width: 5,
-                ),
-                shape: BoxShape.circle,
-                color: Colors.deepPurpleAccent,
-                image: character.avatar == ""
-                  ? const DecorationImage(
-                      image: AssetImage('assets/covers/avatar_placeholder.png'),
-                      fit: BoxFit.contain,
-                    )
-                  : DecorationImage(
-                      image: NetworkImage(character.avatarUrl.toString()),
-                      fit: BoxFit.contain,
-                    ),
-              ),
-            )
-          ),
-          // Center the text in the middle
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: Text(
-              character.name,
-              style: const TextStyle(
-                fontSize: 20,
-                height: 5.0,
-              ),
-              overflow: TextOverflow.fade,
-              softWrap: false,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          ...character.getFieldsWidgets()
-        ]
-      ),
+    // Provider.of<PocketbaseProvider>(context, listen: true).getCharacterSheet('99k4mfbhqfme3oy');
+
+    return FutureBuilder<CharacterSheet>(
+      future: Provider.of<PocketbaseProvider>(context, listen: true).getCharacterSheet('99k4mfbhqfme3oy'),
+      builder: (context, snapshot) {
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+
+        } else if (snapshot.hasError) {
+          return const Center(
+            child: Text('Error'),
+          );
+        }
+        else if (snapshot.hasData) {
+
+          CharacterSheet characterSheet = snapshot.data!;
+
+          return character.getCharacterSheetView(characterSheet);
+        }
+
+        return Container();
+      }
     );
   }
 }

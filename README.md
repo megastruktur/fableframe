@@ -7,19 +7,27 @@
 ```json
 
 [
-	{
-		"type": "tab",
-		"label": "Skills",
-		"icon": "",
-		"content": [
-			{
-				"type": "fields",
-				"label": "",
-				"rendersGroups": ["skills"],
-				"content": []
-			}
-		]
-	}
+  {
+    "type": "tab",
+    "label": "Skills",
+    "icon": "",
+    "content": [
+      {
+        "type": "fields",
+        "label": "",
+        "renderName": "words-to-live-by",
+        "content": []
+      },
+      {
+        "type": "fields",
+        "label": "",
+        "rendersGroups": [
+          "skills"
+        ],
+        "content": []
+      }
+    ]
+  }
 ]
 
 ```

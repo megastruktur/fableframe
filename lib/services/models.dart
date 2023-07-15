@@ -31,12 +31,7 @@ class Character {
 
   getFieldsWidgets() => fields.map((field) => field.getWidget()).toList();
 
-
-  getCharacterSheetView(CharacterSheet characterSheet) {
-    return characterSheet.getCharacterSheetView(this);
-  }
-
-  getFieldsByGroup(String groupName) => fields.where((field) => field.group == groupName).toList();
+  Field getFieldByName(String fieldName) => fields.firstWhere((field) => field.name == fieldName);
 
   getFieldsByGroups(List<String> groupNames) => fields.where((field) =>  groupNames.contains(field.group)).toList();
 
@@ -160,87 +155,89 @@ class CharacterSheet {
 
   factory CharacterSheet.fromRecord(RecordModel record) => CharacterSheet.fromJson(record.toJson());
 
-  getCharacterSheetView(Character character) {
 
-    if (template.isNotEmpty) {
-      // Foreach Tab.
-      List<Widget> tabs = [];
-      List<Widget> tabIcons = [];
+  (List<Widget>, List<Widget>) getCharacterTabsAndTabBar(Character character) {
+    // Foreach Tab.
+    List<Widget> tabs = [];
+    List<Widget> tabIcons = [];
 
-      template.forEach((element) {
-        
-        // Create a tab header.
-        tabIcons.add(const Tab(icon: Icon(Icons.directions_car)));
+    template.forEach((element) {
+      
+      // Create a tab header.
+      tabIcons.add(const Tab(icon: Icon(Icons.directions_car)));
 
-        // Create a tab body.
-        List<Widget> tab = [];
+      // Create a tab body.
+      List<Widget> tab = [];
 
-        element.content?.forEach((contentElement) {
-          try {
-            List<Widget> widgets = contentElement.getWidgets(character);
-            // Add all items from widgets List to tab List
-            widgets.forEach((widget) {
-              tab.add(widget);
-            });
-          }
-          catch (e, stacktrace) {
-            logger.e(e);
-            logger.e(stacktrace);
-          }
-        });
-        tabs.add(ListView(
-          children: tab,
-        ));
+      element.content?.forEach((contentElement) {
+        try {
+          List<Widget> widgets = contentElement.getWidgets(character);
+          // Add all items from widgets List to tab List
+          widgets.forEach((widget) {
+            tab.add(widget);
+          });
+        }
+        catch (e, stacktrace) {
+          logger.e(e);
+          logger.e(stacktrace);
+        }
       });
+      tabs.add(ListView(
+        children: tab,
+      ));
+    });
 
-      // Add Description Tab
-      tabIcons.add(const Tab(icon: Icon(Icons.info)));
+    // Add Description Tab
+    tabIcons.add(const Tab(icon: Icon(Icons.info)));
 
-      var descriptionTab =
-
-        // @todo remove Hero animation?
-        Hero(
-          tag: character.id,
-          child: Container(
-            height: 140,
-            clipBehavior: Clip.antiAlias,
-            
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.black,
-                width: 5,
+    // Adds a Character Description tab
+    // @todo move to Template
+    var descriptionTab =
+      Container(
+        height: 140,
+        clipBehavior: Clip.antiAlias,
+        
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.black,
+            width: 5,
+          ),
+          shape: BoxShape.circle,
+          color: Colors.deepPurpleAccent,
+          image: character.avatar == ""
+            ? const DecorationImage(
+                image: AssetImage('assets/covers/avatar_placeholder.png'),
+                fit: BoxFit.contain,
+              )
+            : DecorationImage(
+                image: NetworkImage(character.avatarUrl.toString()),
+                fit: BoxFit.contain,
               ),
-              shape: BoxShape.circle,
-              color: Colors.deepPurpleAccent,
-              image: character.avatar == ""
-                ? const DecorationImage(
-                    image: AssetImage('assets/covers/avatar_placeholder.png'),
-                    fit: BoxFit.contain,
-                  )
-                : DecorationImage(
-                    image: NetworkImage(character.avatarUrl.toString()),
-                    fit: BoxFit.contain,
-                  ),
-            ),
-          )
-        );
-
-      tabs.add(descriptionTab);
-
-      return DefaultTabController(
-        length: tabs.length,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
-              tabs: tabIcons,
-            ),
-          ),
-          body: TabBarView(
-            children: tabs,
-          ),
         ),
       );
-    }
+
+    tabs.add(descriptionTab);
+
+    return (tabIcons, tabs);
+  }
+
+  getCharacterSheetView(Character character) {
+
+    var (tabIcons, tabs) = getCharacterTabsAndTabBar(character);
+
+    return DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: tabIcons,
+          ),
+        ),
+        body: TabBarView(
+          children: tabs,
+        ),
+      ),
+    );
   }
 }
 
@@ -250,13 +247,15 @@ class CSTemplateElement {
   final String type;
   final String label;
   final String? icon;
-  final List<String> rendersGroups; // render group of fields.
+  final List<String>? rendersGroups; // render group of fields.
+  final String? renderName; // render group of fields.
   final List<CSTemplateElement>? content;
 
   CSTemplateElement({
     this.type = '',
     this.label = '',
     this.icon = '',
+    this.renderName = '',
     this.rendersGroups = const [],
     this.content = const [],
   });
@@ -269,8 +268,11 @@ class CSTemplateElement {
 
   getWidgets(Character character) {
     // Get Content.
-    if (rendersGroups.isNotEmpty) {
-        List<Field> groupFields = character.getFieldsByGroups(rendersGroups);
+    if (renderName != '') {
+        Field field = character.getFieldByName(renderName!);
+        return [field.getWidget()];
+    } else if (rendersGroups!.isNotEmpty) {
+        List<Field> groupFields = character.getFieldsByGroups(rendersGroups!);
         return groupFields.map((f) => f.getWidget()).toList();
     }
   }

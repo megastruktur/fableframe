@@ -76,6 +76,7 @@ CSTemplateElement _$CSTemplateElementFromJson(Map<String, dynamic> json) =>
       type: json['type'] as String? ?? '',
       label: json['label'] as String? ?? '',
       icon: json['icon'] as String? ?? '',
+      renderName: json['renderName'] as String? ?? '',
       rendersGroups: (json['rendersGroups'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -93,5 +94,6 @@ Map<String, dynamic> _$CSTemplateElementToJson(CSTemplateElement instance) =>
       'label': instance.label,
       'icon': instance.icon,
       'rendersGroups': instance.rendersGroups,
+      'renderName': instance.renderName,
       'content': instance.content,
     };

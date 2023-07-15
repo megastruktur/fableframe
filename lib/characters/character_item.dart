@@ -15,46 +15,43 @@ class CharacterItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return Hero(
-      tag: character.id,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (BuildContext context) => CharacterScreen(character: character),
-              ),
-            );
-          },
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) => CharacterScreen(character: character),
+            ),
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            image: character.avatar == ""
+              ? const DecorationImage(
+                  image: AssetImage('assets/covers/avatar_placeholder.png'),
+                  fit: BoxFit.cover,
+                )
+              : DecorationImage(
+                  image: NetworkImage(character.avatarUrl.toString()),
+                  fit: BoxFit.cover,
+                ),
+          ),
+
           child: Container(
             decoration: BoxDecoration(
-              image: character.avatar == ""
-                ? const DecorationImage(
-                    image: AssetImage('assets/covers/avatar_placeholder.png'),
-                    fit: BoxFit.cover,
-                  )
-                : DecorationImage(
-                    image: NetworkImage(character.avatarUrl.toString()),
-                    fit: BoxFit.cover,
-                  ),
+              color: Colors.black.withOpacity(0.8),
             ),
-
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Text(
-                  character.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    height: 5.0,
-                  ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Text(
+                character.name,
+                style: const TextStyle(
+                  fontSize: 20,
+                  height: 5.0,
                 ),
+                overflow: TextOverflow.fade,
+                softWrap: false,
               ),
             ),
           ),
@@ -93,7 +90,22 @@ class CharacterScreen extends StatelessWidget {
 
           CharacterSheet characterSheet = snapshot.data!;
 
-          return character.getCharacterSheetView(characterSheet);
+          var (tabIcons, tabs) = characterSheet.getCharacterTabsAndTabBar(character);
+
+          return DefaultTabController(
+            length: tabs.length,
+            child: Scaffold(
+              appBar: AppBar(
+                bottom: TabBar(
+                  tabs: tabIcons,
+                ),
+              ),
+              body: TabBarView(
+                children: tabs,
+              ),
+            ),
+          );
+          
         }
 
         return Container();

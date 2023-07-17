@@ -29,7 +29,7 @@ class Character {
       _$CharacterFromJson(json);
   Map<String, dynamic> toJson() => _$CharacterToJson(this);
 
-  getFieldsWidgets() => fields.map((field) => field.getWidget()).toList();
+  List<Widget> getFieldsWidgets() => fields.map((field) => field.getWidget()).toList();
 
   Field getFieldByName(String fieldName) => fields.firstWhere((field) => field.name == fieldName);
 
@@ -171,9 +171,9 @@ class CharacterSheet {
 
       element.content?.forEach((contentElement) {
         try {
-          List<Widget> widgets = contentElement.getWidgets(character);
+          List<Widget>? widgets = contentElement.getWidgets(character);
           // Add all items from widgets List to tab List
-          widgets.forEach((widget) {
+          widgets?.forEach((widget) {
             tab.add(widget);
           });
         }
@@ -266,7 +266,7 @@ class CSTemplateElement {
 
   factory CSTemplateElement.fromRecord(RecordModel record) => CSTemplateElement.fromJson(record.toJson());
 
-  getWidgets(Character character) {
+  List<Widget>? getWidgets(Character character) {
     // Get Content.
     if (renderName != '') {
         Field field = character.getFieldByName(renderName!);
@@ -275,5 +275,6 @@ class CSTemplateElement {
         List<Field> groupFields = character.getFieldsByGroups(rendersGroups!);
         return groupFields.map((f) => f.getWidget()).toList();
     }
+    return null;
   }
 }

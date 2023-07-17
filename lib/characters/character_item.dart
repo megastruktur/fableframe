@@ -17,27 +17,28 @@ class CharacterItem extends StatelessWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (BuildContext context) => CharacterScreen(character: character),
-            ),
-          );
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            image: character.avatar == ""
-              ? const DecorationImage(
-                  image: AssetImage('assets/covers/avatar_placeholder.png'),
-                  fit: BoxFit.cover,
-                )
-              : DecorationImage(
-                  image: NetworkImage(character.avatarUrl.toString()),
-                  fit: BoxFit.cover,
+      child: Ink(
+        decoration: BoxDecoration(
+          image: character.avatar == ""
+            ? const DecorationImage(
+                image: AssetImage('assets/covers/avatar_placeholder.png'),
+                fit: BoxFit.cover,
+              )
+            : DecorationImage(
+                image: NetworkImage(
+                  character.avatarUrl.toString(),
                 ),
-          ),
-
+                fit: BoxFit.cover,
+              ),
+        ),
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (BuildContext context) => CharacterScreen(character: character),
+              ),
+            );
+          },
           child: Container(
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.8),
@@ -96,6 +97,20 @@ class CharacterScreen extends StatelessWidget {
             length: tabs.length,
             child: Scaffold(
               appBar: AppBar(
+                title: Row(
+                  children: [
+                    ClipOval(
+                      child: FadeInImage.assetNetwork(
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                        placeholder: 'assets/covers/avatar_placeholder.png',
+                        image: character.avatarUrl.toString(),
+                      ),
+                    ),
+                    Text(character.name)
+                  ],
+                ),
                 bottom: TabBar(
                   tabs: tabIcons,
                 ),
